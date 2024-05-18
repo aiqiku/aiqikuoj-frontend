@@ -1,5 +1,5 @@
 <template>
   <div class="about">
-    <h1>关于我们</h1>
+    <h1>管理员页面</h1>
   </div>
 </template>
