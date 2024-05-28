@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref, toRefs } from "vue";
 import { useStore } from "vuex";
+import checkAccess from "@/access/checkAccess";
+import ACCESS_ENUM from "@/access/accessEnum";
 
 const router = useRouter();
 // 默认主页
@@ -10,15 +12,21 @@ const selectKeys = ref(["/"]);
 
 const store = useStore();
 
-//获取当前登录用户
 //展示的路由页面
-const visibleRotes = routes.filter((item, index) => {
-  if (item.meta?.hideInMenu) {
-    return false;
-  }
-
-  //权限校验
-  return true;
+//使用computed 是因为当computed发现里面的值有修改的话就会重新渲染组件 类似于监视器
+const visibleRotes = computed(() => {
+  return routes.filter((item, index) => {
+    if (item.meta?.hideInMenu) {
+      return false;
+    }
+    if (
+      !checkAccess(store.state.user.loginUser, item?.meta?.access as string)
+    ) {
+      return false;
+    }
+    //权限校验
+    return true;
+  });
 });
 const doMenuClick = (key: string) => {
   router.push({
@@ -31,7 +39,7 @@ router.afterEach((to, from, failure) => {
 setTimeout(() => {
   store.dispatch("user/getLoginUser", {
     userName: "lulu",
-    role: "admin",
+    userRole: ACCESS_ENUM.ADMIN,
   });
 }, 3000);
 </script>

@@ -22,3 +22,4 @@ const checkAccess = (loginUser: any, needAccess = ACCESS_ENUM.NOT_LOGIN) => {
   }
   return true;
 };
+export default checkAccess;
